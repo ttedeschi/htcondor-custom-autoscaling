@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: htcondor-exporter-svc
+spec:
+  type: NodePort
+  ports:
+  - name: exporter
+    port: 9118
+    protocol: TCP
+    targetPort: 9118
+  selector:
+    app: htcondor-exporter
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: htcondor-exporter
+  labels:
+      app: htcondor-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: htcondor-exporter
+  template:
+    metadata:
+      labels:
+        app: htcondor-exporter
+    spec:
+      containers:
+      - name: htcondor-exporter
+        image: ttedesch/htcondor-exporter:base       
+        env:
+        - name:  X509_USER_PROXY
+          value: /root/gwms_proxy
+        - name: _condor_SEC_CLIENT_AUTHENTICATION_METHODS
+          value: GSI
+        - name:  _condor_SEC_DEFAULT_ENCRYPTION      
+          value: REQUIRED
+        - name: _condor_SCHEDD_HOST
+          value: 212.189.205.26
+        - name:  _condor_COLLECTOR_HOST
+          value: 212.189.205.252
+        - name: _condor_GSI_DAEMON_NAME
+          value: '/C=IT/O=CLOUD@CNAF/CN=3ec7dacd-3cb4-44fd-b8d4-c13f200a166b@dodas-iam'
+        ports:
+        - containerPort: 9118
+        command: ["python3" ]
+        args: ["/root/htcondor-monitor/exporter/exporter/CondorExporter.py"]
+      nodeSelector:
+        condor: schedd
