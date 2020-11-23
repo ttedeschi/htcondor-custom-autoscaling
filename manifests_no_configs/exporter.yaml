@@ -49,5 +49,6 @@ spec:
         ports:
         - containerPort: 9118
         command: ["python3", "/root/htcondor-monitor/exporter/exporter/CondorExporter.py"]
-
+      nodeSelector:
+        condor: schedd
         #args: ["/root/htcondor-monitor/exporter/exporter/CondorExporter.py"]

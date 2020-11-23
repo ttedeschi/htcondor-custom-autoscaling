@@ -1,8 +1,8 @@
 rules:
-  - seriesQuery: 'condor_slot_activity_idle'        
+  - seriesQuery: 'condor_slot_activity_busy'        
     resources:
       template: "<<.Resource>>"
     name:
       matches: "^(.*)"
       as: "${1}"
-    metricsQuery: 'sum(<<.Series>>) by (job)' 
+    metricsQuery: 'avg(<<.Series>>) by (job)' 
